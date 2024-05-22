@@ -177,18 +177,18 @@ sprites:
 	; 	Y Position, Tile number, Attributes, X Position
   .db 		$60, 				$1E, 				$00, 				$42   ; U
   .db 		$60, 				$17, 				$00, 				$51   ; N
-	
+
   .db 		$60, 				$0A, 				$00, 				$6F   ; A
   .db 		$60, 				$0B, 				$00, 				$7E   ; B
   .db 		$60, 				$1B, 				$00, 				$8D   ; R
-	.db 		$60, 				$0A, 				$00, 				$9C   ; A
+  .db 		$60, 				$0A, 				$00, 				$9C   ; A
   .db 		$60, 				$23, 				$00, 				$AB   ; Z
   .db 		$60, 				$18, 				$00, 				$BA   ; O
-	
-	.db 		$80, 				$15, 				$00, 				$72   ; L
-	.db 		$80, 				$18, 				$00, 				$7E   ; O
-	.db 		$80, 				$0B, 				$00, 				$8A   ; B
-	.db 		$80, 				$18, 				$00, 				$96   ; O
+
+  .db 		$80, 				$15, 				$00, 				$72   ; L
+  .db 		$80, 				$18, 				$00, 				$7E   ; O
+  .db 		$80, 				$0B, 				$00, 				$8A   ; B
+  .db 		$80, 				$18, 				$00, 				$96   ; O
 
   .org  $FFFA 	; First of the three vectors starts here
 
