@@ -6,7 +6,7 @@
 ; -----------------------------------------------------------
 
   .bank 0
-  .org  $C000
+  .org  $8000
 RESET:
   SEI        ; ignore IRQs
   CLD        ; disable decimal mode
@@ -23,7 +23,7 @@ RESET:
   BIT $2002
 
 vblankwait1:
-	BIT $2002
+  BIT $2002
   BPL vblankwait1
   TXA
 
@@ -42,108 +42,100 @@ clrmem:
 vblankwait2:
   BIT $2002
   BPL vblankwait2
-
+; ----------------- SPRITES -------------------
 LoadPalettes:
-  LDA   $2002		; read PPU status to reset the high/low latch
+  LDA   $2002   ; read PPU status to reset the high/low latch
   LDA   #$3F
-  STA   $2006		; write the high byte of $3F00 address
+  STA   $2006   ; write the high byte of $3F00 address
   LDA   #$00
-  STA   $2006		; write the low byte of $3F00 address
+  STA   $2006   ; write the low byte of $3F00 address
   LDX   #$00
-LoadPalettesLoop:
-  LDA   palette, x				; Load palette byte
-  STA   $2007 						; Write to PPU
-  INX     								; Set index to next byte
-  CPX   #$20							; Check against 32 (hex 30)
-  BNE   LoadPalettesLoop	;	If x = $20, 32 bytes copied, all done
+LoadBackgroundPaletteLoop:
+  LDA   background_palette, x     ; Load palette byte
+  STA   $2007                     ; Write to PPU
+  INX                             ; Set index to next byte
+  CPX   #$20                      ; Check against 32 (hex 30)
+  BNE   LoadBackgroundPaletteLoop ;	If x = $20, 32 bytes copied, all done
+  LDX #$00
 
-LoadSprites:
-  LDX #$00              ; start at 0
-LoadSpritesLoop:
-  LDA sprites, x        ; Load data from address (sprites + x)
-  STA $0200, x          ; Store into RAM address ($0200 + x)
-  INX                   ; Increment X
-  CPX #$30              ; Check against 48 (hex 30)
-  BNE LoadSpritesLoop   ; If x = $30, 48 bytes copied, all done
-	
-            
-  LDA #%10001000        ; enable NMI, sprites from Pattern Table 1
+LoadSpritePaletteLoop:
+  LDA sprite_palette, x     ;load palette byte
+  STA $2007                 ;write to PPU
+  INX                       ;set index to next byte
+  CPX #$10            
+  BNE LoadSpritePaletteLoop ; if x = $10, all done
+
+LoadSpritesTitle:
+  LDX #$00                ; start at 0
+LoadSpritesTitleLoop:
+  LDA sprites_title, x          ; Load data from address (sprites + x)
+  STA $0200, x            ; Store into RAM address ($0200 + x)
+  INX                     ; Increment X
+  CPX #$30                ; Check against 48 (hex 30)
+  BNE LoadSpritesTitleLoop     ; If x = $30, 48 bytes copied, all done
+  
+  LDA #$88          ; enable NMI, sprites from Pattern Table 2 ($80 from pattern table 1)
   STA $2000
 
-  LDA #%00010000        ; enable sprites
+  LDA #$10          ; enable sprites
   STA $2001
-
+; -------------------------------------------
+; ----------------- AUDIO -------------------
 GenerateSound:
+; Notes reference:
+; NTSC: https://nerdy-nights.nes.science/downloads/missing/NotesTableNTSC.txt
+; PAL:  https://nerdy-nights.nes.science/downloads/missing/NotesTablePAL.txt
+
   LDA #%10111111 ;Duty 10, Length Counter Disabled, Saw Envelopes disabled, Volume F
   STA $4000
 
-	; CHANNEL SQUARE 1
-	;		C
-	LDA #%00000001
+LoadNotes:
+  ; CHANNEL SQUARE 1
+  LDA #$1
   STA $4015
-	LDA #$AA   
-  STA $4002
-  LDA #$01
-  STA $4003
-	JSR delay
-  ;		D
-	LDA #%00000001
-  STA $4015
-	LDA #$7B 
-  STA $400
-  LDA #$01
-  STA $4003
-	JSR delay
+  LDX #$00
 
-	; 	E
-  LDA #%00000001
-  STA $4015
-	LDA #$52
-  STA $4002
-  LDA #$01
-  STA $4003
-	JSR delay
-
-	;		F
-  LDA #%00000001
-  STA $4015
-	LDA #$3F
-  STA $4002
-  LDA #$01
-  STA $4003
-  JSR delay
-
-	;		G
-  LDA #%00000001
-  STA $4015
-	LDA #$1C
-  STA $4002
-  LDA #$01
-  STA $4003
-  JSR delay
-
-	;		A
-	LDA #%00000001
-  STA $4015
-	LDA #$FE
-  STA $4002
   LDA #$00
   STA $4003
-	JSR delay
 
-	;		B
-	LDA #%00000001
-  STA $4015
-	LDA #$E1
+LoadNotesLoop:
+  LDA notes, x
   STA $4002
-  LDA #$00
-  STA $4003
-	JSR delay
+    
+  INX
 
+  JSR delay
+  JSR delay
+
+  CPX #$7
+  BNE LoadNotesLoop
 
 ; END CHANNEL
-	LDA #%0000000
+  LDA #%0000000
   STA $4015
+
+; -------------------------------------------
+
+delay:
+  TXA
+  PHA
+  TYA
+  PHA
+
+  LDX #$FF
+outer_loop:
+  LDY #$FF
+inner_loop:
+  DEY
+  BNE inner_loop
+  DEX
+  BNE outer_loop
+
+  PLA
+  TAY
+  PLA
+  TAX
+  RTS
 
 InfiniteLoop:
   JMP   InfiniteLoop
@@ -154,52 +146,52 @@ NMI:
   LDA   #$02
   STA   $4014 ; set the high byte (02) of the RAM address, start the transfer
 
-  RTI     		; return from interrupt
-
-delay:
-  LDX #$FF
-delay_loop1:
-  LDY #$FF
-delay_loop2:
-  DEY
-  BNE delay_loop2
-  DEX
-  BNE delay_loop1
-  RTS
-
+  RTI         ; return from interrupt
+; -------------------------------------------
   .bank 1
   .org  $E000
-palette:
-  .db $0F,$00,$10,$20,$0F,$01,$21,$31,$0F,$00,$10,$20,$0F,$01,$21,$31  ; Background palette data
-  .db $0F,$07,$16,$27,$0F,$06,$16,$26,$0F,$16,$26,$36,$0F,$16,$26,$36  ; Sprite palette data
+; ---------- PALETTES AND SPRITES ----------
+background_palette:
+  .db $22 ,$29 ,$1A ,$0F	;background palette 1
+  .db $22 ,$36 ,$17 ,$0F	;background palette 2
+  .db $22 ,$30 ,$21 ,$0F	;background palette 3
+  .db $22 ,$27 ,$17 ,$0F	;background palette 4
+  
+sprite_palette:
+  .db $22 ,$16 ,$27 ,$18	;sprite palette 1
+  .db $22 ,$1A ,$30 ,$27	;sprite palette 2
+  .db $22 ,$16 ,$30 ,$27	;sprite palette 3
+  .db $22 ,$0F ,$36 ,$17	;sprite palette 4
+  
+sprites_title:
+  ; Y Position, Tile number, Attributes, X Position
+  .db $60,  $1E,  $00,  $42   ; U
+  .db $60,  $17,  $00,  $51   ; N
 
-sprites:
-	; 	Y Position, Tile number, Attributes, X Position
-  .db 		$60, 				$1E, 				$00, 				$42   ; U
-  .db 		$60, 				$17, 				$00, 				$51   ; N
+  .db $60,  $0A,  $00,  $6F   ; A
+  .db $60,  $0B,  $00,  $7E   ; B
+  .db $60,  $1B,  $00,  $8D   ; R
+  .db $60,  $0A,  $00,  $9C   ; A
+  .db $60,  $23,  $00,  $AB   ; Z
+  .db $60,  $18,  $00,  $BA   ; O   
+  
+  .db $80,  $15,  $00,  $72   ; L
+  .db $80,  $18,  $00,  $7E   ; O
+  .db $80,  $0B,  $00,  $8A   ; B
+  .db $80,  $18,  $00,  $96   ; O
 
-  .db 		$60, 				$0A, 				$00, 				$6F   ; A
-  .db 		$60, 				$0B, 				$00, 				$7E   ; B
-  .db 		$60, 				$1B, 				$00, 				$8D   ; R
-  .db 		$60, 				$0A, 				$00, 				$9C   ; A
-  .db 		$60, 				$23, 				$00, 				$AB   ; Z
-  .db 		$60, 				$18, 				$00, 				$BA   ; O
+; C, D, E, F, G, A, B.
+notes:
+  .db $D2, $BD,	$A9, $9F,	$8E,	$FD, $E2
 
-  .db 		$80, 				$15, 				$00, 				$72   ; L
-  .db 		$80, 				$18, 				$00, 				$7E   ; O
-  .db 		$80, 				$0B, 				$00, 				$8A   ; B
-  .db 		$80, 				$18, 				$00, 				$96   ; O
-
-  .org  $FFFA 	; First of the three vectors starts here
-
-  .dw   NMI 		; When an NMI happens (once per frame if enabled) the 
-          			; processor will jump to the label NMI:
-  .dw   RESET 	; When the processor first turns on or is reset, it will jump
-          			; to the label RESET:
-  .dw   0 			; external interrupt IRQ is not used in this tutorial
-
+; -------------------------------------------
+  .org  $FFFA   ; First of the three vectors starts here
+  .dw   NMI     ; When an NMI happens (once per frame if enabled) the 
+                ; processor will jump to the label NMI:
+  .dw   RESET   ; When the processor first turns on or is reset, it will jump
+                ; to the label RESET:
+  .dw   0       ; external interrupt IRQ is not used in this tutorial
+; -------------------------------------------
   .bank 2
   .org  $0000
   .incbin "mario.chr" ; includes 8KB graphics file from SMB1
-
-
