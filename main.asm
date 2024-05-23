@@ -182,7 +182,7 @@ sprites_title:
 
 ; C, D, E, F, G, A, B.
 notes:
-  .db $D2, $BD,	$A9, $9F,	$8E,	$FD, $E2
+  .db $D2, $BD, $A9, $9F, $8E, $FD, $E2
 
 ; -------------------------------------------
   .org  $FFFA   ; First of the three vectors starts here
