@@ -89,7 +89,7 @@ LoadSpriteCharacterLoop:
   CPX #$10
   BNE LoadSpriteCharacterLoop
 
-  LDA $0201
+  LDA #$1F
   STA figure
 
   
@@ -102,38 +102,38 @@ LoadSpriteCharacterLoop:
 
 ; -------------------------------------------
 ; ----------------- AUDIO -------------------
-;;;; GenerateSound:
-;;;; ; Notes reference:
-;;;; ; NTSC: https://nerdy-nights.nes.science/downloads/missing/NotesTableNTSC.txt
-;;;; ; PAL:  https://nerdy-nights.nes.science/downloads/missing/NotesTablePAL.txt
-;;;; 
-;;;;   LDA #%10111111 ;Duty 10, Length Counter Disabled, Saw Envelopes disabled, Volume F
-;;;;   STA $4000
-;;;; 
-;;;; LoadNotes:
-;;;;   ; CHANNEL SQUARE 1
-;;;;   LDA #$1
-;;;;   STA $4015
-;;;;   LDX #$00
-;;;; 
-;;;;   LDA #$00
-;;;;   STA $4003
-;;;; 
-;;;; LoadNotesLoop:
-;;;;   LDA notes, x
-;;;;   STA $4002
-;;;;     
-;;;;   INX
-;;;; 
-;;;;   JSR delay
-;;;;   JSR delay
-;;;; 
-;;;;   CPX #$7
-;;;;   BNE LoadNotesLoop
-;;;; 
-;;;; ; END CHANNEL
-;;;;   LDA #%0000000
-;;;;   STA $4015
+ GenerateSound:
+ ; Notes reference:
+ ; NTSC: https://nerdy-nights.nes.science/downloads/missing/NotesTableNTSC.txt
+ ; PAL:  https://nerdy-nights.nes.science/downloads/missing/NotesTablePAL.txt
+ 
+   LDA #%10111111 ;Duty 10, Length Counter Disabled, Saw Envelopes disabled, Volume F
+   STA $4000
+ 
+ LoadNotes:
+   ; CHANNEL SQUARE 1
+   LDA #$1
+   STA $4015
+   LDX #$00
+ 
+   LDA #$00
+   STA $4003
+ 
+ LoadNotesLoop:
+   LDA notes, x
+   STA $4002
+     
+   INX
+ 
+   JSR delay
+   JSR delay
+ 
+   CPX #$7
+   BNE LoadNotesLoop
+ 
+ ; END CHANNEL
+   LDA #%0000000
+   STA $4015
 
 ; -------------------------------------------
 
@@ -214,10 +214,10 @@ sprite_title:
 
 sprite_character:
   ; Y Position, Tile number, Attributes, X Position
-  .db $10, $B0, $00, $10   ;sprite 0
-  .db $10, $B2, $00, $18   ;sprite 1
-  .db $18, $B1, $00, $10   ;sprite 0
-  .db $18, $B3, $00, $18   ;sprite 1
+  .db $10, $B0, $01, $08   ; sprite 0
+  .db $10, $B2, $01, $0F   ; sprite 1
+  .db $18, $B1, $01, $08   ; sprite 0
+  .db $18, $B3, $01, $0F   ; sprite 1
 
 ; C, D, E, F, G, A, B.
 notes:
