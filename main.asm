@@ -6,7 +6,7 @@
 ; -----------------------------------------------------------
   .rsset $0000
   
-player_x .rs 1
+figure .rs 1
 
   .bank 0
   .org  $8000
@@ -90,7 +90,7 @@ LoadSpriteCharacterLoop:
   BNE LoadSpriteCharacterLoop
 
   LDA $0201
-  STA player_x
+  STA figure
 
   
 ;------
@@ -167,7 +167,7 @@ NMI:
   LDA   #$02
   STA   $4014 ; set the high byte (02) of the RAM address, start the transfer
 
-  LDA player_x
+  LDA figure
   STA $0233
   STA $023B
   TAX
@@ -176,7 +176,7 @@ NMI:
   STA $0237
   STA $023F
   INX
-  STX player_x
+  STX figure
 
   RTI         ; return from interrupt
 ; -------------------------------------------
