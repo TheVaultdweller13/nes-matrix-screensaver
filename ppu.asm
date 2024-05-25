@@ -67,5 +67,5 @@ LoadSpriteCharacterLoop:
                     ; ($80 from pattern table 1)
   STA $2000
 
-	LDA #%00010000
+  LDA #%00010000
   STA $2001       ; Enable sprites
