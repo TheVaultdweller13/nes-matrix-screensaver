@@ -15,7 +15,7 @@ figure .rs 1      ; Write the value 1 on the previously declared pointer
   .org  $8000     ; Set program counter to the beginning of the cartridge ROM
                   ; memory
 
-  .include "registers.asm"
+  .include "registers.inc"
   .include "subroutines.asm"
 
 ; -----------------------------------------------------------
