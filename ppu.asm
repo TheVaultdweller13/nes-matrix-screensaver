@@ -68,4 +68,4 @@ LoadSpriteCharacterLoop:
   STA $2000
 
 	LDA #%00010000
-  STA $2001       ; Enable background and sprites
+  STA $2001       ; Enable sprites
