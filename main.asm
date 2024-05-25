@@ -104,20 +104,16 @@ sprite_palette:
 
 sprite_title:
   ; Y Position, Tile number, Attributes, X Position
-  .db $60,  $1E,  $00,  $42   ; U
-  .db $60,  $17,  $00,  $51   ; N
+  .db $60,  $11,  $00,  $6C   ; H
+  .db $60,  $18,  $00,  $78   ; O
+  .db $60,  $15,  $00,  $84   ; L
+  .db $60,  $0A,  $00,  $90   ; A
 
-  .db $60,  $0A,  $00,  $6F   ; A
-  .db $60,  $0B,  $00,  $7E   ; B
-  .db $60,  $1B,  $00,  $8D   ; R
-  .db $60,  $0A,  $00,  $9C   ; A
-  .db $60,  $23,  $00,  $AB   ; Z
-  .db $60,  $18,  $00,  $BA   ; O
-  
-  .db $80,  $15,  $00,  $72   ; L
-  .db $80,  $18,  $00,  $7E   ; O
-  .db $80,  $0B,  $00,  $8A   ; B
-  .db $80,  $18,  $00,  $96   ; O
+  .db $80,  $16,  $02,  $66   ; M
+  .db $80,  $1E,  $02,  $72   ; U
+  .db $80,  $17,  $02,  $7E   ; N
+  .db $80,  $0D,  $02,  $8A   ; D
+  .db $80,  $18,  $02,  $96   ; O
 
 sprite_character:
   ; Y Position, Tile number, Attributes, X Position

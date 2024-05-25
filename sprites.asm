@@ -20,7 +20,7 @@ LoadBackgroundPaletteLoop:
   STA PPUDATA                   ; Write to PPU
   INX                           ; Set index to next byte
   CPX #$20
-  BNE LoadBackgroundPaletteLoop ;	If x = $20, 32 bytes copied, all done
+  BNE LoadBackgroundPaletteLoop ; If x = 0x20, 32 bytes copied, all done
 
   LDX #$00                      ; Reset X register for the coming loop
 LoadSpritePaletteLoop:
@@ -36,16 +36,16 @@ LoadSpriteTitleLoop:
   LDA sprite_title, x           ; Load data from address (sprites + x)
   STA $0200, x                  ; Store into RAM address ($0200 + x)
   INX                           ; Increment X
-  CPX #$30                      ; Check against 48 (hex 30)
-  BNE LoadSpriteTitleLoop       ; If x = $30, 48 bytes copied, all done
+  CPX #$24                      
+  BNE LoadSpriteTitleLoop
 
   LDX #$00                      ; Reset X register for the coming loop
 LoadSpriteCharacterLoop:
-  LDA sprite_character, x       ; Load data from address (sprite_character + x)
-  STA $0230, x                  ; Store into RAM address ($0230 + x)
-  INX                           ; Increase pointer
-  CPX #$10                      ; Until we've reached 16
-  BNE LoadSpriteCharacterLoop   ; Else, iterate
+  LDA sprite_character, x
+  STA $0230, x
+  INX
+  CPX #$10
+  BNE LoadSpriteCharacterLoop
 
   LDA #$1F                      ; 00011111 (animation pointer, confusing)
   STA figure                    ; Write to "figure" (0x00)
