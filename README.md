@@ -40,7 +40,7 @@ Follow these instructions to set up and run the project on your local machine.
 * [NES Wiki](https://www.nesdev.org/wiki/Nesdev_Wiki)
 ### NES Guides:
 * [Nerdy Nights guide](https://nerdy-nights.nes.science/#overview)
-* [Famicom Party](https://famicom.party/book/)
+* [Famicom Party guide](https://famicom.party/book/)
 * [Patater guide](https://www.patater.com/gbaguy/nesasm.htm)
 * [Jacob Roman guide](https://www.vbforums.com/showthread.php?858389-NES-6502-Programming-Tutorial-Part-1-Getting-Started)
 ### Emulator:
