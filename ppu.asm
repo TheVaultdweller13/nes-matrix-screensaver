@@ -1,6 +1,22 @@
 ; -----------------------------------------------------------
-; ------------------------- SPRITES -------------------------
+; --------------------------- PPU ---------------------------
 ; -----------------------------------------------------------
+;     PPUMASK ($2001)
+;     
+;     76543210
+;     ||||||||
+;     |||||||+- Grayscale (0: normal color; 1: AND all palette entries
+;     |||||||   with 0x30, effectively producing a monochrome display;
+;     |||||||   note that colour emphasis STILL works when this is on!)
+;     ||||||+-- Disable background clipping in leftmost 8 pixels of screen
+;     |||||+--- Disable sprite clipping in leftmost 8 pixels of screen
+;     ||||+---- Enable background rendering
+;     |||+----- Enable sprite rendering
+;     ||+------ Intensify reds (and darken other colors)
+;     |+------- Intensify greens (and darken other colors)
+;     +-------- Intensify blues (and darken other colors)
+; -----------------------------------------------------------
+
   LDA $2002       ; Read PPU status to reset the high/low latch
 
   LDA #$3F        ; Flag 00111111
@@ -21,7 +37,7 @@ LoadBackgroundPaletteLoop:
   LDX #$00                      ; Reset X register for the coming loop
 LoadSpritePaletteLoop:
   LDA sprite_palette, x         ; Load palette byte
-  STA $2007                     ; Write to PPU
+  STA $2027                     ; Write to PPU
   INX                           ; Set index to next byte
   CPX #$10
   BNE LoadSpritePaletteLoop     ; If x = $10, all done
@@ -51,5 +67,5 @@ LoadSpriteCharacterLoop:
                     ; ($80 from pattern table 1)
   STA $2000
 
-  LDA #$10
-  STA $2001                     ; Enable sprites
+	LDA #%00010000
+  STA $2001       ; Enable background and sprites

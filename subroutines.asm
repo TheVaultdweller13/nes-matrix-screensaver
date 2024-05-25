@@ -2,16 +2,16 @@
 ; ----------------------- SUBROUTINES -----------------------
 ; -----------------------------------------------------------
 vblankwait:       ; Subroutine to wait for vblank
-  BIT $2002
-  BPL vblankwait
-  TXA
-  RTS
+  BIT $2002       ; Check PPUSTATUS
+  BPL vblankwait  ; Loop until vblank starts (bit 7 is set)
+  TXA             ; Transfer X to A
+  RTS             ; Return from subroutine
 
-delay:            ; Subroutine to wait in general
-  TXA
-  PHA
-  TYA
-  PHA
+delay:  ; Subroutine to wait in general
+  TXA   ;
+  PHA   ;
+  TYA   ;
+  PHA   ; Push registers X and Y onto the stack to save their previous values
 
   LDX #$FF
 outer_loop:
@@ -22,8 +22,10 @@ inner_loop:
   DEX
   BNE outer_loop
 
-  PLA
-  TAY
-  PLA
-  TAX
-  RTS
+  
+  PLA   ;
+  TAY   ;
+  PLA   ;
+  TAX   ; Restore the values of X and Y by popping them from the stack
+
+  RTS   ; Return from subroutine

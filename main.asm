@@ -56,7 +56,7 @@ clrmem:           ; Clear memory by setting it all to zeros
 
   JSR vblankwait  ; Wait for vblank
 
-  .include "sprites.asm"
+  .include "ppu.asm"
   .include "audio.asm"
 
 ; -----------------------------------------------------------
