@@ -15,29 +15,30 @@ figure .rs 1      ; Write the value 1 on the previously declared pointer
   .org  $8000     ; Set program counter to the beginning of the cartridge ROM
                   ; memory
 
+  .include "registers.asm"
   .include "subroutines.asm"
 
 ; -----------------------------------------------------------
 ; --------------------- INITIALIZATION ----------------------
 ; -----------------------------------------------------------
 
-RESET:            ; Tag for initialization code
-  SEI             ; Ignore IRQs
-  CLD             ; Disable decimal mode
+RESET:                    ; Tag for initialization code
+  SEI                     ; Ignore IRQs
+  CLD                     ; Disable decimal mode
 
-  LDX #$40        ; Load %1000000 on register X to set flag on next instruction
-  STX $4017       ; Disable APU frame IRQ
+  LDX #$40                ; Load %1000000 on register X to set flag on next instruction
+  STX APU_FRAME_COUNTER   ; Disable APU frame IRQ
 
-  LDX #$FF        ; Set X to last memory address
-  TXS             ; Set stack pointer to X to clear stack
+  LDX #$FF                ; Set X to last memory address
+  TXS                     ; Set stack pointer to X to clear stack
 
-  INX             ; Increment X by 1 so it overflows to 0, from 0xFF to 0x0
-  STX $2000       ; Disable NMI by writting 0 to the memory address 0x2000
-  STX $2001       ; Disable rendering by writting 0 to the memory address 0x2001
-  STX $4010       ; Disable DMC IRQs by writting 0 to the memory address 0x4010
+  INX                     ; Increment X by 1 so it overflows to 0, from 0xFF to 0x0
+  STX PPUCTRL             ; Disable NMI by writting 0 to the memory address 0x2000
+  STX PPUMASK             ; Disable rendering by writting 0
+  STX APU_DMC_1           ; Disable DMC IRQs by writting 0
 
-  BIT $2002       ; Read PPU status to clear any pending flags and prepare for
-                  ; further synchronization
+  BIT PPUSTATUS           ; Read PPU status to clear any pending flags and prepare for
+                          ; further synchronization
 
 ; -----------------------------------------------------------
   JSR vblankwait  ; Wait for vblank
@@ -56,7 +57,7 @@ clrmem:           ; Clear memory by setting it all to zeros
 
   JSR vblankwait  ; Wait for vblank
 
-  .include "ppu.asm"
+  .include "sprites.asm"
   .include "audio.asm"
 
 ; -----------------------------------------------------------
@@ -66,9 +67,9 @@ InfiniteLoop:
 
 NMI:
   LDA   #$00
-  STA   $2003 ; Set the low byte (00) of the RAM address
+  STA   OAMADDR ; Set the low byte (00) of the RAM address
   LDA   #$02
-  STA   $4014 ; Set the high byte (02) of the RAM address, start the transfer
+  STA   OAMDMA  ; Set the high byte (02) of the RAM address, start the transfer
 
   LDA figure
   STA $0233
@@ -87,7 +88,7 @@ NMI:
 ; --------------------------- DATA --------------------------
 ; -----------------------------------------------------------
   .bank 1
-  .org  $E000
+  .org  $A000
 ; ------------------------------------------------------------
 background_palette:
   .db $22 ,$29 ,$1A ,$0F       ; Background palette 1
@@ -138,5 +139,5 @@ notes:
   .dw   0       ; external interrupt IRQ is not used in this tutorial
 ; ------------------------------------------------------------
   .bank 2
-  .org  $0000
+  .org  $C000
   .incbin "mario.chr" ; includes 8KB graphics file from SMB1

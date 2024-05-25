@@ -1,35 +1,23 @@
 ; -----------------------------------------------------------
-; --------------------------- PPU ---------------------------
-; -----------------------------------------------------------
-;     PPUMASK ($2001)
-;     
-;     76543210
-;     ||||||||
-;     |||||||+- Grayscale (0: normal color; 1: AND all palette entries
-;     |||||||   with 0x30, effectively producing a monochrome display;
-;     |||||||   note that colour emphasis STILL works when this is on!)
-;     ||||||+-- Disable background clipping in leftmost 8 pixels of screen
-;     |||||+--- Disable sprite clipping in leftmost 8 pixels of screen
-;     ||||+---- Enable background rendering
-;     |||+----- Enable sprite rendering
-;     ||+------ Intensify reds (and darken other colors)
-;     |+------- Intensify greens (and darken other colors)
-;     +-------- Intensify blues (and darken other colors)
+; ------------------------- SPRITES -------------------------
 ; -----------------------------------------------------------
 
-  LDA $2002       ; Read PPU status to reset the high/low latch
+; View the PPU registers information in the PPU section 
+; of the "registers.asm" file.
+
+  LDA PPUSTATUS   ; Read PPU status to reset the high/low latch
 
   LDA #$3F        ; Flag 00111111
-  STA $2006       ; Write the high byte of $3F00 address
+  STA PPUADDR     ; Write the high byte of $3F00 address
 
-  LDA #$00        ; Flag 00000000
-  STA $2006       ; Write the low byte of $3F00 address
+  LDA #$10        ; Flag 00000000
+  STA PPUADDR     ; Write the low byte of $3F00 address
 
 LoadPalettes:
   LDX #$00                      ; Reset X register for the coming loop
 LoadBackgroundPaletteLoop:
   LDA background_palette, x     ; Load palette byte
-  STA $2007                     ; Write to PPU
+  STA PPUDATA                   ; Write to PPU
   INX                           ; Set index to next byte
   CPX #$20
   BNE LoadBackgroundPaletteLoop ;	If x = $20, 32 bytes copied, all done
@@ -37,7 +25,7 @@ LoadBackgroundPaletteLoop:
   LDX #$00                      ; Reset X register for the coming loop
 LoadSpritePaletteLoop:
   LDA sprite_palette, x         ; Load palette byte
-  STA $2027                     ; Write to PPU
+  STA PPUDATA                   ; Write to PPU
   INX                           ; Set index to next byte
   CPX #$10
   BNE LoadSpritePaletteLoop     ; If x = $10, all done
@@ -65,7 +53,7 @@ LoadSpriteCharacterLoop:
 ; -----------------------------------------------------------
   LDA #$88          ; enable NMI, sprites from Pattern Table 2
                     ; ($80 from pattern table 1)
-  STA $2000
+  STA PPUCTRL
 
   LDA #%00010000
-  STA $2001       ; Enable sprites
+  STA PPUMASK       ; Enable sprites
