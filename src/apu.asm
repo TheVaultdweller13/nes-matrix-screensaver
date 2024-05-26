@@ -1,12 +1,12 @@
 ; -----------------------------------------------------------
 ; ------------------------- AUDIO ---------------------------
 ; -----------------------------------------------------------
- GenerateSound: 
+generateSound: 
   LDA #%10111111  ; Duty 10, Length Counter Disabled, Saw Envelopes disabled,
                   ; Volume F
   STA APU_PULSE_1_CONTROL_1
 
- LoadNotes:
+loadNotes:
   LDA #$1
   STA APU_STATUS  ; Activate a channel square 1
   
@@ -14,7 +14,7 @@
   STA APU_PULSE_1_CONTROL_4  ; Configure hight 3-bits of period
 
   LDX #$00
- LoadNotesLoop:
+loadNotesLoop:
   LDA notes, x
   STA APU_PULSE_1_CONTROL_3  ; Configure low 8-bits of period
 
@@ -24,8 +24,7 @@
   JSR delay
  
   CPX #$7
-  BNE LoadNotesLoop
+  BNE loadNotesLoop
 
   LDA #$0
   STA APU_STATUS  ; Disable square 1
- 

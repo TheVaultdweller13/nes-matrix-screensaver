@@ -1,0 +1,1 @@
+figure: .res 1             ; Reserve 1 byte in zero page memory
