@@ -3,7 +3,7 @@
 ; -----------------------------------------------------------
 
 ; View the PPU registers information in the PPU section 
-; of the "registers.asm" file.
+; of the "registers" file.
   LDA PPUSTATUS   ; Read PPU status to reset the high/low latch
 
   LDA #$3F        ; Flag 00111111
@@ -50,8 +50,8 @@ loadSpriteCharacterLoop:
   STA figure                    ; Write to "figure" (0x00)
 
 ; -----------------------------------------------------------
-  LDA #$88          ; enable NMI, sprites from Pattern Table 2
-                    ; ($80 from pattern table 1)
+  LDA #%10001000          ; enable NMI, sprites from Pattern Table 2
+                          ; (%10000000 from pattern table 1)
   STA PPUCTRL
 
   LDA #%00010000
