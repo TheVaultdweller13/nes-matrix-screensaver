@@ -1,6 +1,6 @@
 @echo off
 echo.
-echo Compiling...
+echo Assembling...
 ca65 registers.inc
 ca65 main.asm
 if not %errorlevel% == 0 (
@@ -8,7 +8,7 @@ if not %errorlevel% == 0 (
     pause
     exit /b %errorlevel%
 )
-echo - Compiled successfully.
+echo - Assembled successfully.
 
 echo.
 
