@@ -1,13 +1,6 @@
 ; -----------------------------------------------------------
 ; ----------------------- SUBROUTINES -----------------------
 ; -----------------------------------------------------------
-.segment "CODE"
-
-vblankwait:       ; Subroutine to wait for vblank
-  BIT PPUSTATUS   ; Check PPUSTATUS
-  BPL vblankwait  ; Loop until vblank starts (bit 7 is set)
-  TXA             ; Transfer X to A
-  RTS             ; Return from subroutine
 
 delay:  ; Subroutine to wait in general
   TXA   ;
