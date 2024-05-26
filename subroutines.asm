@@ -1,6 +1,7 @@
 ; -----------------------------------------------------------
 ; ----------------------- SUBROUTINES -----------------------
 ; -----------------------------------------------------------
+.segment "CODE"
 
 vblankwait:       ; Subroutine to wait for vblank
   BIT PPUSTATUS   ; Check PPUSTATUS

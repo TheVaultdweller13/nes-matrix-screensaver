@@ -1,49 +1,77 @@
 ; -----------------------------------------------------------
-;	----------------------- CART CONFIG -----------------------
+; ----------------------- INIT HEADER -----------------------
 ; -----------------------------------------------------------
-  .inesprg 1      ; 1x 16KB PRG code
-  .ineschr 1      ; 1x 8KB CHR data
-  .inesmap 0      ; Mapper 0 = NROM, no bank swapping
-  .inesmir 1      ; Background mirroring
+
+.segment "HEADER"
+  .byte $4e, $45, $53, $1a ; Magic string that always begins an iNES header
+  .byte $02                ; Number of 16KB PRG-ROM banks
+  .byte $01                ; Number of 8KB CHR-ROM banks
+  .byte %00000001          ; Vertical mirroring, no save RAM, no mapper
+  .byte %00000000          ; No special-case flags set, no mapper
+  .byte $00                ; No PRG-RAM present
+  .byte $00                ; NTSC format
+
+.segment "ZEROPAGE"
+figure: .res 1             ; Reserve 1 byte in zero page memory
+
+.segment "STARTUP"
+.segment "CODE"
+
+.include "registers.inc"
 
 ; -----------------------------------------------------------
-  .rsset $0000    ; Point to 0x0
-figure .rs 1      ; Write the value 1 on the previously declared pointer
+; ----------------------- SUBROUTINES -----------------------
+; -----------------------------------------------------------
+vblankwait:
+  BIT PPUSTATUS
+  BPL vblankwait
+  RTS
 
-; ----------------------------------------------------------- 
-  .bank 0         ; Activate memory bank 0
-  .org  $8000     ; Set program counter to the beginning of the cartridge ROM
-                  ; memory
+delay:
+  TXA
+  PHA
+  TYA
+  PHA
 
-  .include "registers.inc"
-  .include "subroutines.asm"
+  LDX #$FF
+outer_loop:
+  LDY #$FF
+inner_loop:
+  DEY
+  BNE inner_loop
+  DEX
+  BNE outer_loop
+
+  PLA
+  TAY
+  PLA
+  TAX
+  RTS
 
 ; -----------------------------------------------------------
 ; --------------------- INITIALIZATION ----------------------
 ; -----------------------------------------------------------
 
-RESET:                    ; Tag for initialization code
-  SEI                     ; Ignore IRQs
-  CLD                     ; Disable decimal mode
+RESET:
+  SEI
+  CLD
 
-  LDX #$40                ; Load %1000000 on register X to set flag on next instruction
-  STX APU_FRAME_COUNTER   ; Disable APU frame IRQ
+  LDX #$40
+  STX APU_FRAME_COUNTER
 
-  LDX #$FF                ; Set X to last memory address
-  TXS                     ; Set stack pointer to X to clear stack
+  LDX #$FF
+  TXS
 
-  INX                     ; Increment X by 1 so it overflows to 0, from 0xFF to 0x0
-  STX PPUCTRL             ; Disable NMI by writting 0 to the memory address 0x2000
-  STX PPUMASK             ; Disable rendering by writting 0
-  STX APU_DMC_1           ; Disable DMC IRQs by writting 0
+  INX
+  STX PPUCTRL
+  STX PPUMASK
+  STX APU_DMC_1
 
-  BIT PPUSTATUS           ; Read PPU status to clear any pending flags and prepare for
-                          ; further synchronization
+  BIT PPUSTATUS
 
-; -----------------------------------------------------------
-  JSR vblankwait  ; Wait for vblank
+  JSR vblankwait
 
-clrmem:           ; Clear memory by setting it all to zeros
+clrmem:
   STA $000, x
   STA $100, x
   STA $200, x
@@ -52,24 +80,94 @@ clrmem:           ; Clear memory by setting it all to zeros
   STA $500, x
   STA $600, x
   STA $700, x
-  INX             ; Increment displacement
-  BNE clrmem      ; Branch until X is zero
+  INX
+  BNE clrmem
 
-  JSR vblankwait  ; Wait for vblank
+  JSR vblankwait
 
-  .include "sprites.asm"
-  .include "audio.asm"
+  LDA PPUSTATUS
 
-; -----------------------------------------------------------
+  LDA #$3F
+  STA PPUADDR
+  LDA #$10
+  STA PPUADDR
 
-InfiniteLoop:
-  JMP   InfiniteLoop
+loadPalettes:
+  LDX #$00
+
+loadBackgroundPaletteLoop:
+  LDA background_palette, x
+  STA PPUDATA
+  INX
+  CPX #$20
+  BNE loadBackgroundPaletteLoop
+
+  LDX #$00
+loadSpritePaletteLoop:
+  LDA sprite_palette, x
+  STA PPUDATA
+  INX
+  CPX #$10
+  BNE loadSpritePaletteLoop
+
+loadSprites:
+  LDX #$00
+loadSpriteTitleLoop:
+  LDA sprite_title, x
+  STA $0200, x
+  INX
+  CPX #$24
+  BNE loadSpriteTitleLoop
+
+  LDX #$00
+loadSpriteCharacterLoop:
+  LDA sprite_character, x
+  STA $0230, x
+  INX
+  CPX #$10
+  BNE loadSpriteCharacterLoop
+
+  LDA #$1F
+  STA figure
+
+  LDA #$88
+  STA PPUCTRL
+
+  LDA #%00010000
+  STA PPUMASK
+
+generateSound:
+  LDA #%10111111
+  STA APU_PULSE_1_CONTROL_1
+
+loadNotes:
+  LDA #$1
+  STA APU_STATUS
+
+  LDA #$00
+  STA APU_PULSE_1_CONTROL_4
+
+  LDX #$00
+loadNotesLoop:
+  LDA notes, x
+  STA APU_PULSE_1_CONTROL_3
+  INX
+  JSR delay
+  JSR delay
+  CPX #$7
+  BNE loadNotesLoop
+
+  LDA #$0
+  STA APU_STATUS
+
+infiniteLoop:
+  JMP infiniteLoop
 
 NMI:
-  LDA   #$00
-  STA   OAMADDR ; Set the low byte (00) of the RAM address
-  LDA   #$02
-  STA   OAMDMA  ; Set the high byte (02) of the RAM address, start the transfer
+  LDA #$00
+  STA OAMADDR
+  LDA #$02
+  STA OAMDMA
 
   LDA figure
   STA $0233
@@ -82,58 +180,48 @@ NMI:
   INX
   STX figure
 
-  RTI         ; Return from interrupt
+  RTI
 
 ; -----------------------------------------------------------
 ; --------------------------- DATA --------------------------
-; -----------------------------------------------------------
-  .bank 1
-  .org  $A000
 ; ------------------------------------------------------------
 background_palette:
-  .db $22 ,$29 ,$1A ,$0F       ; Background palette 1
-  .db $22 ,$36 ,$17 ,$0F       ; Background palette 2
-  .db $22 ,$30 ,$21 ,$0F       ; Background palette 3
-  .db $22 ,$27 ,$17 ,$0F       ; Background palette 4
+  .byte $22, $29, $1A, $0F
+  .byte $22, $36, $17, $0F
+  .byte $22, $30, $21, $0F
+  .byte $22, $27, $17, $0F
 
 sprite_palette:
-  .db $22 ,$16 ,$27 ,$18       ; Sprite palette 1
-  .db $22 ,$1A ,$30 ,$27       ; Sprite palette 2
-  .db $22 ,$16 ,$30 ,$27       ; Sprite palette 3
-  .db $22 ,$0F ,$36 ,$17       ; Sprite palette 4
+  .byte $22, $16, $27, $18
+  .byte $22, $1A, $30, $27
+  .byte $22, $16, $30, $27
+  .byte $22, $0F, $36, $17
 
 sprite_title:
-  ; Y Position, Tile number, Attributes, X Position
-  .db $60,  $11,  $00,  $6C   ; H
-  .db $60,  $18,  $00,  $78   ; O
-  .db $60,  $15,  $00,  $84   ; L
-  .db $60,  $0A,  $00,  $90   ; A
+  .byte $60, $11, $00, $6C
+  .byte $60, $18, $00, $78
+  .byte $60, $15, $00, $84
+  .byte $60, $0A, $00, $90
 
-  .db $80,  $16,  $02,  $66   ; M
-  .db $80,  $1E,  $02,  $72   ; U
-  .db $80,  $17,  $02,  $7E   ; N
-  .db $80,  $0D,  $02,  $8A   ; D
-  .db $80,  $18,  $02,  $96   ; O
+  .byte $80, $16, $02, $66
+  .byte $80, $1E, $02, $72
+  .byte $80, $17, $02, $7E
+  .byte $80, $0D, $02, $8A
+  .byte $80, $18, $02, $96
 
 sprite_character:
-  ; Y Position, Tile number, Attributes, X Position
-  .db $10, $B0, $01, $08   ; sprite 0
-  .db $10, $B2, $01, $0F   ; sprite 1
-  .db $18, $B1, $01, $08   ; sprite 0
-  .db $18, $B3, $01, $0F   ; sprite 1
+  .byte $10, $B0, $01, $08
+  .byte $10, $B2, $01, $0F
+  .byte $18, $B1, $01, $08
+  .byte $18, $B3, $01, $0F
 
-; A, B, C, D, E, F, G.
 notes:
-  .db $FD, $E2, $D2, $BD, $A9, $9F, $8E
+  .byte $FD, $E2, $D2, $BD, $A9, $9F, $8E
 
-; ------------------------------------------------------------
-  .org  $FFFA   ; First of the three vectors starts here
-  .dw   NMI     ; When an NMI happens (once per frame if enabled) the 
-                ; processor will jump to the label NMI:
-  .dw   RESET   ; When the processor first turns on or is reset, it will jump
-                ; to the label RESET:
-  .dw   0       ; external interrupt IRQ is not used in this tutorial
-; ------------------------------------------------------------
-  .bank 2
-  .org  $C000
-  .incbin "mario.chr" ; includes 8KB graphics file from SMB1
+.segment "VECTORS"
+  .word NMI
+  .word RESET
+  .word 0
+
+.segment "CHARS"
+  .incbin "mario.chr"

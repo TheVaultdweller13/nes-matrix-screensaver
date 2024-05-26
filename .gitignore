@@ -1,4 +1,14 @@
+#ca65
+*.o
+
+### rom
+*.cdl
 *.nes
+*.nes.deb
 *.fns
+
+### NESASM
 *.exe
+
+### vscode
 .vscode
