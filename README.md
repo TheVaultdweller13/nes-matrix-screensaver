@@ -22,6 +22,7 @@ Follow these instructions to set up and run the project on your local machine.
     There are two methods provided for compiling the code: using a batch script for Windows or a Makefile for Unix-based systems.
 
     **Windows:**
+    - Make sure to add CC65 to the path
     - Run the `compile.bat` script:
 
         ```sh
@@ -47,15 +48,19 @@ Follow these instructions to set up and run the project on your local machine.
 
 ### NES Guides
 
-- [Nerdy Nights guide](https://nerdy-nights.nes.science/#overview)
-- [Famicom Party guide](https://famicom.party/book/)
-- [Patater guide](https://www.patater.com/gbaguy/nesasm.htm)
-- [Jacob Roman guide](https://www.vbforums.com/showthread.php?858389-NES-6502-Programming-Tutorial-Part-1-Getting-Started)
+- [Nerdy Nights guide](https://nerdy-nights.nes.science/#overview) (NESASM)
+- [Famicom Party guide](https://famicom.party/book/) (CC65)
+- [Patater guide](https://www.patater.com/gbaguy/nesasm.htm) (NESASM)
+- [Jacob Roman guide](https://www.vbforums.com/showthread.php?858389-NES-6502-Programming-Tutorial-Part-1-Getting-Started) (NESASM)
+
+### Other Guides
+
+- [Interactive online tutorial for MOS 6052](https://skilldrick.github.io/easy6502/)
 
 ### Emulator
 
 - [FCEUX](https://fceux.com/web/home.html)
 
-### Other Guides
+### Compiler
 
-- [Interactive online tutorial for MOS 6052](https://skilldrick.github.io/easy6502/)
+- [CC65](https://cc65.github.io/)
