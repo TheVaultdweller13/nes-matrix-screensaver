@@ -3,9 +3,13 @@
 echo.
 echo Assembling...
 
-ca65 registers.inc
-ca65 subroutines.asm
-ca65 main.asm
+if not exist build (
+    mkdir build
+)
+if not exist rom (
+    mkdir rom
+)
+ca65 src/main.asm -o build/main.o
 if not %errorlevel% == 0 (
     echo Error: Failed to compile
     pause
@@ -16,7 +20,7 @@ echo - Assembled successfully.
 echo.
 
 echo Linking...
-ld65 registers.o subroutines.o main.o -C nes.cfg -o main.nes
+ld65 build/main.o -C nes.cfg -o rom/main.nes
 if not %errorlevel% == 0 (
     echo Error: Failed to link
     pause
