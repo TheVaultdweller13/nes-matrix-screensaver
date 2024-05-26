@@ -59,4 +59,5 @@ Follow these instructions to set up and run the project on your local machine.
 
 ### Emulator
 
+- [MESEN](https://github.com/SourMesen/Mesen2/)
 - [FCEUX](https://fceux.com/web/home.html)
