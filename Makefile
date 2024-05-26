@@ -6,7 +6,7 @@ CONFIG = nes.cfg
 
 INPUT = $(SOURCE_DIR)/main.asm
 OBJECT = $(SOURCE_DIR)/main.o
-OUTPUT = $(SOURCE_DIR)/main.nes
+OUTPUT = main.nes
 
 all: build
 
