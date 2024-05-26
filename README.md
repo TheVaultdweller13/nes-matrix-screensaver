@@ -60,7 +60,3 @@ Follow these instructions to set up and run the project on your local machine.
 ### Emulator
 
 - [FCEUX](https://fceux.com/web/home.html)
-
-### Compiler
-
-- [CC65](https://cc65.github.io/)
