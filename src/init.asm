@@ -17,8 +17,6 @@
 
   BIT PPUSTATUS
 
-
-
 ; Clear Memory
 vblankwait1:        ; Subroutine to wait for vblank
   BIT PPUSTATUS     ; Check PPUSTATUS
