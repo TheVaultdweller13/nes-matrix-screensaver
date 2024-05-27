@@ -17,10 +17,12 @@
 
   BIT PPUSTATUS
 
+
+
 ; Clear Memory
-vblankwait1:       ; Subroutine to wait for vblank
-  BIT PPUSTATUS   ; Check PPUSTATUS
-  BPL vblankwait1  ; Loop until vblank starts (bit 7 is set)
+vblankwait1:        ; Subroutine to wait for vblank
+  BIT PPUSTATUS     ; Check PPUSTATUS
+  BPL vblankwait1   ; Loop until vblank starts (bit 7 is set)
 clrmem:
   STA $000, x
   STA $100, x
