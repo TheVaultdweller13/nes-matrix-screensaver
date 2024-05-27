@@ -42,16 +42,17 @@ nmi:
   LDA #$02
   STA OAMDMA
 
-  LDA figure
-  STA $0233
-  STA $023B
-  TAX
-  CLC
-  ADC #$08
-  STA $0237
-  STA $023F
-  INX
-  STX figure
+  ; TODO: Review movement logic
+  ; LDA figure
+  ; STA $0233
+  ; STA $023B
+  ; TAX
+  ; CLC
+  ; ADC #$08
+  ; STA $0237
+  ; STA $023F
+  ; INX
+  ; STX figure
 
   RTI
 
@@ -67,4 +68,4 @@ nmi:
 
 .segment "CHARS"
 
-.incbin "sprites/mario.chr"
+.incbin "sprites/font-8x8.chr"
