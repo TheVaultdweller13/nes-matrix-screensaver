@@ -1,6 +1,6 @@
 # NES Matrix Screensaver
 
-NES Matrix Screensaver is a project that recreates the iconic "Matrix rain" effect on an NES console. 
+NES Matrix Screensaver is a project that recreates the iconic "Matrix code rain" effect on an NES console. 
 Using 6502 assembly language, this project displays cascading characters on the screen, 
 mimicking the famous visual effect from the movie "The Matrix".
 
