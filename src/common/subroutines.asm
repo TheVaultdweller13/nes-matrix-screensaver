@@ -1,3 +1,4 @@
+.segment "STARTUP"
 ; -----------------------------------------------------------
 ; ----------------------- SUBROUTINES -----------------------
 ; -----------------------------------------------------------
@@ -24,7 +25,7 @@ inner_loop:
   TAX   ; Restore the values of X and Y by popping them from the stack
 
   RTS   ; Return from subroutine
-
+; -----------------------------------------------------------
 
 random:
   LDA seed        ; Load the current seed value into the accumulator
@@ -39,3 +40,4 @@ random:
 no_eor:
   STA seed        ; Store the new seed value back to memory
   RTS             ; Return from subroutine
+; -----------------------------------------------------------

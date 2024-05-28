@@ -5,10 +5,6 @@
 ; View the PPU registers information in the PPU section 
 ; of the "registers" file.
   LDA PPUSTATUS   ; Read PPU status to reset the high/low latch
-
-start_seed:
-  LDA #$14
-  STA seed
 loadPalettes:
   LDA #$3F                ; Flag 00111111
   STA PPUADDR             ; Write the high byte of $3F00 address
@@ -30,16 +26,20 @@ loadPalettesLoop:
                         ; Not Equal to zero
                         ; if compare was equal to 32, keep going down
 
-loadSprites:
-  LDX #$00
-loadSpritesLoop:
-  LDA sprites, x
-  STA $0200, x
-  INX
-  JSR random
-  STA $201
-  CPX #$10
-  BNE loadSpritesLoop
+; TODO: Remove? Sprites are currently loaded in the NMI
+
+; LDA sprites, x
+; STA $0200, x
+;loadSprites:
+;  LDX #$00
+;loadSpritesLoop:
+;  LDA sprites, x
+;  STA $0200, x
+;  INX
+;  ; JSR random  ;; test random character
+;  ; STA $201    ;; in this memory position
+;  CPX #$20
+;  BNE loadSpritesLoop
                         
 ; -----------------------------------------------------------
   LDA #%10000000        ; enable NMI, sprites from Pattern Table 0
