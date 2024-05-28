@@ -18,7 +18,7 @@ Follow these instructions to set up and run the project on your local machine.
 1. **Clone the repository:**
 
     ```sh
-    git clone https://github.com/TheVaultdweller13/NESHelloWorld
+    git clone https://github.com/TheVaultdweller13/nes-matrix-screensaver
     ```
 
 2. **Compile the code:**
