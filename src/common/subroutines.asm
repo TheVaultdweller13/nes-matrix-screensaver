@@ -71,11 +71,11 @@ print_sprites:
     JSR random
     STA $021D ; Tile Number byte of the 8th character
 
-    CPX #$20
-    BEQ end
+    CPX #$20  ; Check that x is the size of the sprite array
+    BEQ end   ; And if it is, jump to the "end" tag
   increment:
-    INX
-    JMP end
+    INX       ; Else, increment x
+    JMP end   ; And jump to "end" tag
   end:
     RTS
 ; -----------------------------------------------------------
