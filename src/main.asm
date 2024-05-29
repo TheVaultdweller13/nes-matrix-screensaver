@@ -24,6 +24,10 @@ start_seed:
   LDA #$14
   STA seed
 
+clear_registers:
+  LDA #$00
+  TAX
+  TAY
 infiniteLoop:
   JMP infiniteLoop
 ; -----------------------------------------------------------
@@ -48,37 +52,7 @@ nmi:
   ; INX
   ; STX figure
   
-  ; TODO: Improve the logic of sprite generation,
-  ; and fix the bug in assigning non-randomized positions
-  LDA sprites, x
-  STA $0200, x
-  
-  JSR random
-  STA $201 ; x -> position of the 1º character
-
-  JSR random
-  STA $205 ; -> x position of the 2º character
-
-  JSR random
-  STA $209 ; -> x position of the 3º character
-
-  JSR random
-  STA $20D ; -> x position of the 4º character
-
-  JSR random
-  STA $211 ; -> x position of the 5º character
-
-  JSR random
-  STA $215 ; -> x position of the 6º character
-
-  JSR random
-  STA $219 ; -> x position of the 7º character
-
-  JSR random
-  STA $21D ; -> x position of the 8º character
-
-  INX
-  ; END TODO
+  JSR print_sprites
   
   RTI
 
