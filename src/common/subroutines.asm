@@ -75,7 +75,7 @@ print_sprites:
     BEQ end   ; And if it is, jump to the "end" tag
   increment:
     INX       ; Else, increment x
-    JMP end   ; And jump to "end" tag
+    JMP end   ; And then, jump to "end" tag
   end:
     RTS
 ; -----------------------------------------------------------
