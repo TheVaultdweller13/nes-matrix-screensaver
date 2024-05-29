@@ -1,3 +1,4 @@
+.segment "STARTUP"
 ; -----------------------------------------------------------
 ; ----------------------- SUBROUTINES -----------------------
 ; -----------------------------------------------------------
@@ -24,7 +25,7 @@ inner_loop:
   TAX   ; Restore the values of X and Y by popping them from the stack
 
   RTS   ; Return from subroutine
-
+; -----------------------------------------------------------
 
 random:
   LDA seed        ; Load the current seed value into the accumulator
@@ -39,3 +40,42 @@ random:
 no_eor:
   STA seed        ; Store the new seed value back to memory
   RTS             ; Return from subroutine
+; -----------------------------------------------------------
+print_sprites:
+  ; TODO: Improve the logic of sprite generation,
+  ; and fix the bug in assigning non-randomized positions
+    LDA sprites, x
+    STA $0200, x
+    
+    JSR random
+    STA $0201 ; Tile Number byte of the 1st character
+
+    JSR random
+    STA $0205 ; Tile Number byte of the 2nd character
+
+    JSR random
+    STA $0209 ; Tile Number byte of the 3rd character
+
+    JSR random
+    STA $020D ; Tile Number byte of the 4th character
+
+    JSR random
+    STA $0211 ; Tile Number byte of the 5th character
+
+    JSR random
+    STA $0215 ; Tile Number byte of the 6th character
+
+    JSR random
+    STA $0219 ; Tile Number byte of the 7th character
+
+    JSR random
+    STA $021D ; Tile Number byte of the 8th character
+
+    CPX #$20  ; Check that x is the size of the sprite array
+    BEQ end   ; And if it is, jump to the "end" tag
+  increment:
+    INX       ; Else, increment x
+    JMP end   ; And then, jump to "end" tag
+  end:
+    RTS
+; -----------------------------------------------------------
