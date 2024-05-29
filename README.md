@@ -1,9 +1,9 @@
-# NES Hello World
+# NES Matrix Screensaver
 
-This project is a sort of "Hello World" written in NES (MOS 6502) assembly,
-featuring some sounds, movements, and simple functions. It serves as a testing
-ground for anyone learning (myself included!) to program in NES assembly, and
-looking for something small yet functional to work with.
+NES Matrix Screensaver is a project that recreates
+the iconic "Matrix code rain" effect on an NES console.
+Using 6502 assembly language, this project displays cascading characters
+on the screen, mimicking the famous visual effect from the movie "The Matrix".
 
 ## Prerequisites
 
@@ -19,7 +19,7 @@ Follow these instructions to set up and run the project on your local machine.
 1. **Clone the repository:**
 
     ```sh
-    git clone https://github.com/TheVaultdweller13/NESHelloWorld
+    git clone https://github.com/TheVaultdweller13/nes-matrix-screensaver
     ```
 
 2. **Compile the code:**
